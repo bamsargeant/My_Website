@@ -203,6 +203,22 @@ function navigation($table, $limit = 3){
     return $output;
 }
 
+function dropdown_Edit($table){
+    $post_set = find_all_articles($table, "id", null, false);
+    $output  = "";
+    while($post = mysqli_fetch_assoc($post_set)) {
+        $output .= "<li>";
+        $output .= "<a href=\"edit_post.php?{$table}=";
+        $output .= urlencode($post["id"]);
+        $output .= "\">";
+        $output .= htmlentities($post["title"]);
+        $output .= "</a>";
+        $output .= "</li>";
+    }
+    $output .= "<li class=\"divider\"></li>";
+    $output .= "<li><a href=\"#\">New Post</a></li";
+    return $output;
+}
 
 function password_encrypt($password){
   $hash_format = "$2y$10$"; // 2y -> use blowfish encryption; 10 -> run the encryption 10 times;
@@ -235,7 +251,7 @@ function password_check($password, $existing_hash){
     }
 }
 
-  function find_admin_by_username($username) {
+function find_admin_by_username($username) {
   global $connection;
 
   $safe_username = mysqli_real_escape_string($connection, $username);

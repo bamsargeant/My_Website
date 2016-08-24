@@ -16,16 +16,19 @@ if (isset($_POST['submit'])) {
   // Process the form
   
   $id = $article["id"];
-  $menu_name = mysql_prep($_POST["menu_name"]);
+  $title = mysql_prep($_POST["title"]);
+  $img_path = mysql_prep($_POST["img_path"]);
   $position = (int) $_POST["position"];
   $visible = (int) $_POST["visible"];
   $content = mysql_prep($_POST["content"]);
+  $date = "CURDATE()";
+  
 
   // validations
-  $required_fields = array("menu_name", "position", "visible", "content");
+  $required_fields = array("title", "position", "visible", "content", "img_path");
   validate_presences($required_fields);
   
-  $fields_with_max_lengths = array("menu_name" => 30);
+  $fields_with_max_lengths = array("title" => 30);
   validate_max_lengths($fields_with_max_lengths);
   
   if (empty($errors)) {
@@ -78,20 +81,7 @@ if (isset($_POST['submit'])) {
             <div class="btn-group">
                 <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">Edit Blog Post <span class="caret"></span></button>
                 <ul class="dropdown-menu scrollable-menu" role="menu">
-                <?php
-                    $post_set = find_all_articles("blog", "id", null, false);
-                    $output  = "";
-                    while($post = mysqli_fetch_assoc($post_set)) {
-                        $output .= "<li>";
-                        $output .= "<a href=\"edit_post.php?subject=";
-                        $output .= urlencode($post["id"]);
-                        $output .= "#blog\">";
-                        $output .= htmlentities($post["title"]);
-                        $output .= "</a>";
-                        $output .= "</li>";
-                    }
-                    echo $output;
-                ?>    
+                <?php echo dropdown_Edit("blog"); ?>    
                 </ul>
             </div>
           </div>
@@ -100,20 +90,7 @@ if (isset($_POST['submit'])) {
             <div class="btn-group">
                 <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">Edit Project Post <span class="caret"></span></button>
                 <ul class="dropdown-menu scrollable-menu" role="menu">
-                <?php
-                    $post_set = find_all_articles("projects", "id", null, false);
-                    $output  = "";
-                    while($post = mysqli_fetch_assoc($post_set)) {
-                        $output .= "<li>";
-                        $output .= "<a href=\"edit_post.php?subject=";
-                        $output .= urlencode($post["id"]);
-                        $output .= "#projects\">";
-                        $output .= htmlentities($post["title"]);
-                        $output .= "</a>";
-                        $output .= "</li>";
-                    }
-                    echo $output;
-                ?>    
+                <?php echo dropdown_Edit("projects"); ?>    
                 </ul>
             </div>          
           </div>
@@ -124,19 +101,55 @@ if (isset($_POST['submit'])) {
 </div>
 
 <div class="container">
-    <div class="form-group">
+    
        <div class="col-sm-10">
-            <form action="edit_post.php?id=<?php echo urlencode($article["id"]); ?>" method="post">
-                <h4>Title:</h4>
-                <input type="text" id="title" name="title" value="" />
-                <br/>
-                <h4>Content:</h4>
-                <textarea name="content" id="content" rows="20" cols="80"></textarea>
-                <br/>
-                <br/>
+           <?php
+                if(!isset($title))
+                    $title = isset($article) ? $article["title"] : "";
+                if(!isset($content))
+                    $content = isset($article) ? $article["content"] : "";
+                if(!isset($img_path))
+                    $img_path = isset($article) ? $article["image_path"] : "";
+            ?>
+
+        <form action="edit_post.php?id=<?php echo urlencode($article["id"]); ?>" method="post">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input class="form-control" id="title" name="title" value="<?php echo htmlentities($title); ?>" />
+            </div>
+            <div class="form-group">
+                <label for="img_path">Image Path:</label>
+                <input class="form-control" id="img_path" name="img_path" value="<?php echo htmlentities($img_path); ?>" />
+            </div>
+            <div class="form-group">
+                <label for="content">Content:</label>
+                <textarea class="form-control" name="content" id="content" rows="15" ><?php echo htmlentities($content);?></textarea>
+            </div>
+            <div class="form-group">
+                <label class="radio-inline">
+                    <input type="radio" name="optradio">Blog
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="optradio">Projects
+                </label>
+                &emsp;
+                <label class="checkbox-inline"><input type="checkbox" checked>Visible</label>
+
+            </div>
+            <div class="form-group">
+                <label for="sel1">Position</label>
+                <select class="form-control" id="sel1">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <input type="submit" name="submit" value="Edit Post" />
-            </form>
-        </div>
+            </div>
+        </form>
+        <hr/>
     </div>
 </div>
 
