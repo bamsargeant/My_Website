@@ -1,6 +1,7 @@
 <?php require_once("../includes/session.php"); ?>
 <?php require_once("../includes/db_connection.php"); ?>
 <?php require_once("../includes/functions.php"); ?>
+<?php require_once("../includes/validation_functions.php"); ?>
 
 <?php confirm_logged_in(); ?>
 <?php find_selected_article(); ?>
@@ -11,7 +12,7 @@
   }
 ?>
 
-<?php /*
+<?php 
 if (isset($_POST['submit'])) {
   // Process the form
   
@@ -21,25 +22,28 @@ if (isset($_POST['submit'])) {
   $position = (int) $_POST["position"];
   $visible = (int) $_POST["visible"];
   $content = mysql_prep($_POST["content"]);
+  $subject = $_POST["subject"];
   $date = "CURDATE()";
   
 
   // validations
-  $required_fields = array("title", "position", "visible", "content", "img_path");
+  $required_fields = array("title", "position", "visible", "content", "img_path", "subject");
   validate_presences($required_fields);
   
-  $fields_with_max_lengths = array("title" => 30);
+  $fields_with_max_lengths = array("title" => 30, "img_path" => 30);
   validate_max_lengths($fields_with_max_lengths);
   
   if (empty($errors)) {
     
     // Perform Update
 
-    $query  = "UPDATE pages SET ";
-    $query .= "menu_name = '{$menu_name}', ";
+    $query  = "UPDATE {$subject} SET ";
+    $query .= "title = '{$title}', ";
     $query .= "position = {$position}, ";
-    $query .= "visible = {$visible}, ";
-    $query .= "content = '{$content}' ";
+    $query .= "visible = 1, ";
+    $query .= "content = '{$content}', ";
+    $query .= "image_path = '{$img_path}' ";
+    //$query .= "date = {$date} ";
     $query .= "WHERE id = {$id} ";
     $query .= "LIMIT 1";
     $result = mysqli_query($connection, $query);
@@ -47,7 +51,7 @@ if (isset($_POST['submit'])) {
     if ($result && mysqli_affected_rows($connection) == 1) {
       // Success
       $_SESSION["message"] = "Page updated.";
-      redirect_to("manage_content.php?page={$id}");
+      redirect_to("admin.php");
     } else {
       // Failure
       $_SESSION["message"] = "Page update failed.";
@@ -58,7 +62,7 @@ if (isset($_POST['submit'])) {
   // This is probably a GET request
   
 } // end: if (isset($_POST['submit']))
-*/
+
 ?>
 
 <?php $layout_context = "admin"; ?>
@@ -68,34 +72,49 @@ if (isset($_POST['submit'])) {
 <div class="container">
     <div class="row">
         <?php echo message(); ?>
+        
+        <?php 
+            if(isset($_GET["blog"])){
+                $main_title = "Edit Blog";
+                $subject = "blog";
+            } else if(isset($_GET["projects"])){
+                $main_title = "Edit Project";
+                $subject = "projects";
 
-        <h2>Edit Post</h2>
-        <ul class="nav nav-pills">
-          <li class="active"><a data-toggle="pill" href="#blog">Blog</a></li>
-          <li><a data-toggle="pill" href="#projects">Project</a></li>
-        </ul>
+            } else {
+                $main_title = "New Post";
+                $subject = "";
+
+            }
+            
+            echo "<h1>{$main_title}</h1>"
+        ?>
+        
+        <hr/>
 
         <div class="tab-content">
-          <div id="blog" class="tab-pane fade in active">
-            <h3>Edit Blog</h3>
+          <div id="blog">
             <div class="btn-group">
                 <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">Edit Blog Post <span class="caret"></span></button>
                 <ul class="dropdown-menu scrollable-menu" role="menu">
-                <?php echo dropdown_Edit("blog"); ?>    
+                    <?php echo dropdown_Edit("blog"); ?>    
                 </ul>
             </div>
           </div>
-          <div id="projects" class="tab-pane fade">
-            <h3>Edit Project</h3>
+            <br/>
+            
+          <div id="projects">
             <div class="btn-group">
                 <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">Edit Project Post <span class="caret"></span></button>
                 <ul class="dropdown-menu scrollable-menu" role="menu">
-                <?php echo dropdown_Edit("projects"); ?>    
+                    <?php echo dropdown_Edit("projects"); ?>    
                 </ul>
             </div>          
           </div>
         </div>
+        
         <hr/>
+        
         
     </div>
 </div>
@@ -112,7 +131,7 @@ if (isset($_POST['submit'])) {
                     $img_path = isset($article) ? $article["image_path"] : "";
             ?>
 
-        <form action="edit_post.php?id=<?php echo urlencode($article["id"]); ?>" method="post">
+        <form action="edit_post.php?<?php echo urlencode($subject) . "=" . urlencode($article["id"]); ?>" method="post">
             <div class="form-group">
                 <label for="title">Title:</label>
                 <input class="form-control" id="title" name="title" value="<?php echo htmlentities($title); ?>" />
@@ -127,18 +146,22 @@ if (isset($_POST['submit'])) {
             </div>
             <div class="form-group">
                 <label class="radio-inline">
-                    <input type="radio" name="optradio">Blog
+                    <input type="radio" name="subject" value="blog" <?php if($subject == "blog") echo "checked"; ?>>Blog
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="optradio">Projects
+                    <input type="radio" name="subject" value="projects" <?php if($subject == "projects") echo "checked"; ?>>Projects
                 </label>
                 &emsp;
-                <label class="checkbox-inline"><input type="checkbox" checked>Visible</label>
+                <label class="checkbox-inline">Visible:
+                    <input type="radio" name="visible" value="0" <?php if ($article["visible"] == 0) { echo "checked"; } ?> /> No
+                    &nbsp;
+                    <input type="radio" name="visible" value="1" <?php if ($article["visible"] == 1) { echo "checked"; } ?>/> Yes
+                </label>
 
             </div>
             <div class="form-group">
                 <label for="sel1">Position</label>
-                <select class="form-control" id="sel1">
+                <select class="form-control" id="sel1" name="position">
                     <option>1</option>
                     <option>2</option>
                     <option>3</option>
@@ -146,7 +169,9 @@ if (isset($_POST['submit'])) {
                 </select>
             </div>
             <div class="form-group">
-                <input type="submit" name="submit" value="Edit Post" />
+                <input type="submit" name="submit" value="Edit Post" class="btn btn-success" role="button"/>
+                <a href="edit_post.php?<?php echo urlencode($subject) . "=" . urlencode($article["id"]); ?>" class="btn btn-warning" role="button">Reset Form</a>
+                <a href="admin.php" class="btn btn-danger pull-right" role="button">Cancel</a>
             </div>
         </form>
         <hr/>

@@ -23,7 +23,7 @@
     
     <body>
         <nav class = "navbar navbar-inverse navbar-top">
-            <div class = "container">
+            <div class = "container-fluid my_header">
                 <div class = "navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
                         <span class = "icon-bar"></span>
@@ -47,7 +47,7 @@
                             </ul>
                         <li <?php if($page == "resume"){echo "class=\"active\"";} ?>> <a href = "resume.php">Resume</a> </li>
                     </ul>
-                    <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right" >
                         <?php 
                         if(logged_in()){?>
                             <li <?php if($page == "admin"){echo "class=\"active\"";} ?>><a href = "admin.php">Admin</a></li>

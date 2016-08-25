@@ -43,19 +43,22 @@
         <div class="col-lg-9">
             <?php echo message(); ?>
             <?php echo form_errors($errors); ?>
-
+            
+            <div class="form-group">
             <h2>Create Admin</h2>
-            <form action="new_admin.php" method="post">
-                <p>Username:
-                  <input type="text" name="username" value="" />
-                </p>
-                  <p>Password:
-                  <input type="password" name="password" value="" />
-                </p>
-              <input type="submit" name="submit" value="Create Admin" />
-            </form>
-            <br />
-            <a href="admin.php">Cancel</a>
+                <form action="new_admin.php" method="post">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input class="form-control" type="text" name="username" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input class="form-control" type="text" name="password" value="" />
+                    </div>
+                <input class="btn btn-primary" type="submit" name="submit" value="Create Admin" />
+                <a class="btn btn-danger pull-right" href="admin.php">Cancel</a>
+                </form>
+            </div>
       </div>
   </div>
 </div>

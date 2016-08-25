@@ -21,7 +21,7 @@ function confirm_query($result_set) {
 function form_errors($errors=array()) {
   $output = "";
   if (!empty($errors)) {
-    $output .= "<div class=\"error\">";
+    $output .= "<div class=\"error  alert alert-danger\">";
     $output .= "Please fix the following errors:";
     $output .= "<ul>";
     foreach ($errors as $key => $error) {
@@ -107,7 +107,7 @@ function find_article_by_id($subject, $id, $public="false"){
   }  
 }
 
-function find_all_articles($table, $order = "id", $limit = 3, $public = true) {
+function find_all_articles($table, $order = "id", $limit = 3, $asc = "DESC", $public = true) {
     global $connection;
 
     $query  = "SELECT * ";
@@ -115,7 +115,7 @@ function find_all_articles($table, $order = "id", $limit = 3, $public = true) {
     if($public){
         $query .= "WHERE visible = 1 ";
     }
-    $query .= "ORDER BY {$order} DESC ";
+    $query .= "ORDER BY {$order} {$asc} ";
     if($limit){
         $query .= "LIMIT {$limit}";
     }
@@ -181,7 +181,7 @@ function navigation($table, $limit = 3){
     $output = "<div class=\"col-lg-3\">";
         $output .= "<div class=\"list-group\">";
             $output .= "<div class=\"sticky\" data-spy=\"affix\">";
-                $article_set = find_all_articles($table, $limit);
+                $article_set = find_all_articles($table, "id", $limit, "DESC");
                 while($article = mysqli_fetch_assoc($article_set)){
                     $output .= "<a href=\"#";
                         $output .= $article["title"];
@@ -249,6 +249,15 @@ function password_check($password, $existing_hash){
     } else{
         return false;
     }
+}
+
+function find_all_admins(){
+    global $connection;
+    
+    $query = "SELECT * FROM admins ORDER BY username ASC";
+    $admin_set = mysqli_query($connection, $query);
+    confirm_query($admin_set);
+    return $admin_set;
 }
 
 function find_admin_by_username($username) {

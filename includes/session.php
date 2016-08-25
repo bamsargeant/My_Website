@@ -4,7 +4,7 @@
 
     function message() {
         if (isset($_SESSION["message"])) {
-            $output = "<div class=\"message\">";
+            $output = "<div class=\"message\ alert alert-danger \">";
             $output .= htmlentities($_SESSION["message"]);
             $output .= "</div>";
 
