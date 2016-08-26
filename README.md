@@ -5,16 +5,16 @@ This is a website built in PHP using WAMP MYSQL, using the bootstrap library to 
 
 ------Screenshots------
 INDEX
-![Alt text](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/index_ss.png?raw=true "Index.php")
+![ScreenShot](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/index_ss.png)
 
 BLOG
-![Alt text](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/blog_ss.png?raw=true "Index.php")
+![ScreenShot](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/blog_ss.jpg)
 
 ADMIN
-![Alt text](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/admin_ss.png?raw=true "Index.php")
+![ScreenShot](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/admin_ss.png)
 
 EDIT_POST
-![Alt text](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/edit_ss.png?raw=true "Index.php")
+![ScreenShot](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/edit_ss.png)
 
 ------PUBLIC-------
 
