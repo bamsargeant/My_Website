@@ -3,6 +3,9 @@ THIS IS A WORK IN PROGRESS
 
 This is a website built in PHP using WAMP MYSQL, using the bootstrap library to maintain functionality over different devices.
 
+------Screenshots------
+![Alt text](/public/uploads/index_ss.png?raw=true "Index.php")
+
 ------PUBLIC-------
 
 INDEX.php     - The homepage will display the logo, as well as the most recent blog and project posts.
