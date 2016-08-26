@@ -1,7 +1,7 @@
 <?php
 	define("DB_SERVER", "localhost");
 	define("DB_USER", "root");
-	define("DB_PASS", "password");
+	define("DB_PASS", "Saphira11");
 	define("DB_NAME", "my_website");
 
   // 1. Create a database connection
