@@ -4,19 +4,11 @@
 <?php require_once("../includes/validation_functions.php"); ?>
 
 <?php confirm_logged_in(); ?>
-<?php find_selected_article(); ?>
-
-<?php
-  if (!$article) {
-    redirect_to("admin.php");
-  }
-?>
 
 <?php 
 if (isset($_POST['submit'])) {
   // Process the form
   
-  $id = $article["id"];
   $title = mysql_prep($_POST["title"]);
   $img_path = mysql_prep($_POST["img_path"]);
   $position = (int) $_POST["position"];
@@ -24,7 +16,6 @@ if (isset($_POST['submit'])) {
   $content = mysql_prep(nl2br($_POST["content"]));
   $subject = mysql_prep($_POST["subject"]);
   $date = "CURDATE()";
-  
 
   // validations
   $required_fields = array("title", "position", "visible", "content", "img_path", "subject");
@@ -37,24 +28,20 @@ if (isset($_POST['submit'])) {
     
     // Perform Update
 
-    $query  = "UPDATE {$subject} SET ";
-    $query .= "title = '{$title}', ";
-    $query .= "position = {$position}, ";
-    $query .= "visible = 1, ";
-    $query .= "content = '{$content}', ";
-    $query .= "image_path = '{$img_path}' ";
-    //$query .= "date = {$date} ";
-    $query .= "WHERE id = {$id} ";
-    $query .= "LIMIT 1";
+    $query  = "INSERT INTO {$subject} (";
+    $query .= "  title, image_path, position, visible, content, date";
+    $query .= ") VALUES (";
+    $query .= "  '{$title}', '{$img_path}', {$position}, {$visible}, '{$content}', $date";
+    $query .= ")";
     $result = mysqli_query($connection, $query);
 
     if ($result && mysqli_affected_rows($connection) == 1) {
       // Success
-      $_SESSION["message"] = "Page updated.";
-      redirect_to("admin.php");
+      $_SESSION["message"] = "Page created.";
+      redirect_to("{$subject}.php");
     } else {
       // Failure
-      $_SESSION["message"] = "Page update failed.";
+      $_SESSION["message"] = "Page creation failed.";
     }
   
   }
@@ -72,13 +59,13 @@ if (isset($_POST['submit'])) {
 <div class="container">
     <div class="row">
         <?php echo message(); ?>
-        
-        <?php 
+        <?php echo form_errors($errors); ?>        
+        <?php
             if(isset($_GET["blog"])){
-                $main_title = "Edit Blog";
+                $main_title = "New Blog";
                 $subject = "blog";
             } else if(isset($_GET["projects"])){
-                $main_title = "Edit Project";
+                $main_title = "New Project";
                 $subject = "projects";
 
             } else {
@@ -87,34 +74,9 @@ if (isset($_POST['submit'])) {
 
             }
             
-            echo "<h1>{$main_title}</h1>"
+            echo "<h1>{$main_title}</h1>";
         ?>
-        
         <hr/>
-
-        <div class="tab-content">
-          <div id="blog">
-            <div class="btn-group">
-                <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">Edit Blog Post <span class="caret"></span></button>
-                <ul class="dropdown-menu scrollable-menu" role="menu">
-                    <?php echo dropdown_Edit("blog"); ?>    
-                </ul>
-            </div>
-          </div>
-            <br/>
-            
-          <div id="projects">
-            <div class="btn-group">
-                <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">Edit Project Post <span class="caret"></span></button>
-                <ul class="dropdown-menu scrollable-menu" role="menu">
-                    <?php echo dropdown_Edit("projects"); ?>    
-                </ul>
-            </div>          
-          </div>
-        </div>
-        
-        <hr/>
-        
         
     </div>
 </div>
@@ -122,39 +84,31 @@ if (isset($_POST['submit'])) {
 <div class="container">
     
        <div class="col-sm-10">
-           <?php
-                if(!isset($title))
-                    $title = isset($article) ? $article["title"] : "";
-                if(!isset($content))
-                    $content = isset($article) ? $article["content"] : "";
-                if(!isset($img_path))
-                    $img_path = isset($article) ? $article["image_path"] : "";
-            ?>
 
-        <form action="edit_post.php?<?php echo urlencode($subject) . "=" . urlencode($article["id"]); ?>" method="post">
+        <form action="new_post.php" method="post">
             <div class="form-group">
                 <label for="title">Title:</label>
-                <input class="form-control" id="title" name="title" value="<?php echo htmlentities($title); ?>" />
+                <input class="form-control" id="title" name="title" value="" />
             </div>
             <div class="form-group">
-                <?php echo dropdown_images(); ?>
+                <?php echo dropdown_images();?>
             </div>
             <div class="form-group">
                 <label for="content">Content:</label>
-                <textarea class="form-control" name="content" id="content" rows="15" ><?php echo htmlentities($content);?></textarea>
+                <textarea class="form-control" name="content" id="content" rows="15" ></textarea>
             </div>
             <div class="form-group">
                 <label class="radio-inline">
-                    <input type="radio" name="subject" value="blog" <?php if($subject == "blog") echo "checked"; ?>>Blog
+                    <input type="radio" name="subject" value="blog" <?php if($subject != "projects") echo "checked"; ?>>Blog
                 </label>
                 <label class="radio-inline">
                     <input type="radio" name="subject" value="projects" <?php if($subject == "projects") echo "checked"; ?>>Projects
                 </label>
                 &emsp;
                 <label class="checkbox-inline">Visible:
-                    <input type="radio" name="visible" value="0" <?php if ($article["visible"] == 0) { echo "checked"; } ?> /> No
+                    <input type="radio" name="visible" value="0"/> No
                     &nbsp;
-                    <input type="radio" name="visible" value="1" <?php if ($article["visible"] == 1) { echo "checked"; } ?>/> Yes
+                    <input type="radio" name="visible" value="1" checked/> Yes
                 </label>
 
             </div>
@@ -168,8 +122,8 @@ if (isset($_POST['submit'])) {
                 </select>
             </div>
             <div class="form-group">
-                <input type="submit" name="submit" value="Edit Post" class="btn btn-success" role="button"/>
-                <a href="edit_post.php?<?php echo urlencode($subject) . "=" . urlencode($article["id"]); ?>" class="btn btn-warning" role="button">Reset Form</a>
+                <input type="submit" name="submit" value="Create Post" class="btn btn-success" role="button"/>
+                <a href="new_post.php" class="btn btn-warning" role="button">Reset Form</a>
                 <a href="admin.php" class="btn btn-danger pull-right" role="button">Cancel</a>
             </div>
         </form>

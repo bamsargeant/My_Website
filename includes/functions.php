@@ -35,17 +35,18 @@ function form_errors($errors=array()) {
   return $output;
 }
 
-function text_cutoff($string, $length = 500){
+function text_cutoff($string, $length = 100){
+    //$string = $length;
     if (strlen($string) > $length) {
 
-    // truncate string
-    $stringCut = substr($string, 0, $length);
+        // truncate string
+        $string = substr($string, 0, $length);
 
-    // make sure it ends in a word so assassinate doesn't become ass...
-    $string = substr($stringCut, 0, strrpos($stringCut, ' '));
-    $string .= "..."; 
-}
-return $string;
+        // make sure it ends in a word so assassinate doesn't become ass...
+        //$string = substr($stringCut, 0, strrpos($stringCut, ' '));
+        $string .= "..."; 
+    }
+    return $string;
 }
 
 function find_selected_article(){
@@ -124,11 +125,13 @@ function find_all_articles($table, $order = "id", $limit = 3, $asc = "DESC", $pu
     return $article_set;
 }
 
-function display_articles($table, $order="id", $limit=3, $public="true"){
+function display_articles($table, $order="id", $limit=100, $public="true"){
     $output = "";
-    $article_set = find_all_articles($table, $order);
+    $article_set = find_all_articles($table, $order, $limit);
     while($article = mysqli_fetch_assoc($article_set)){ 
-        $output .= "<div class=\"panel panel-default\">";
+        $output .= "<div class=\"panel panel-default\" id=\"";
+        $output .= $article["id"];
+        $output .= "\">";
             $output .= "<div class=\"panel-body\">";
                 $output .= "<div class=\"page-header\">";
                     $output .= "<h3>";
@@ -137,7 +140,6 @@ function display_articles($table, $order="id", $limit=3, $public="true"){
                     $output .= $article["date"];
                     $output .= "</small></h3>";
                 $output .= "</div>";
-
                 $output .=  image_path($article); 
                 $output .= "<p>";
                 $output .= $article["content"];
@@ -146,7 +148,26 @@ function display_articles($table, $order="id", $limit=3, $public="true"){
         $output .= "</div>";
         $output .= "<hr/>";
      } 
-     return $output;
+    return $output;
+}
+
+function dropdown_images(){
+    $dir = "uploads/";
+    $allFiles = scandir("uploads");
+    $img_set = array_diff($allFiles, array('.', '..'));
+    
+    $output  = "<label for=\"img\">Select Image (select one):</label>";
+    $output .= "<select class=\"form-control image_list scrollable-menu\" id=\"img\" name=\"img_path\">";
+    foreach ($img_set as $img){
+        $output .= "<option>{$dir}{$img}</option>";
+    }
+    $output .= "</select>";
+    return $output;
+}
+
+function display_no_articles(){
+    $output = "<h1 class=\"no_content\">Unfortunatley there is no content yet</h1>";
+    return $output;
 }
 
 function image_path($article){
@@ -177,22 +198,22 @@ function image_path($article){
     return $img;
 }
 
-function navigation($table, $limit = 3){
+function navigation($table, $limit = 15){
     $output = "<div class=\"col-lg-3\">";
         $output .= "<div class=\"list-group\">";
             $output .= "<div class=\"sticky\" data-spy=\"affix\">";
                 $article_set = find_all_articles($table, "id", $limit, "DESC");
                 while($article = mysqli_fetch_assoc($article_set)){
                     $output .= "<a href=\"#";
-                        $output .= $article["title"];
+                        $output .= $article["id"];
                     $output .=  "\" class=\"list-group-item\">";
 
                     $output .= "<h4 class=\"list-group-item-heading\">"; 
-                        $output .= htmlentities($article["title"]); 
+                        $output .= text_cutoff(htmlentities($article["title"]), 10); 
                     $output .= "</h4>";
 
                     $output .= "<p class=\"list-group-item-text\">";
-                        $output .= nl2br(htmlentities($article["content"]));
+                        $output .= text_cutoff(strip_tags($article["content"]), 30);
                     $output .= "</p>";
                     $output .= "</a>";    
                 }
@@ -204,7 +225,7 @@ function navigation($table, $limit = 3){
 }
 
 function dropdown_Edit($table){
-    $post_set = find_all_articles($table, "id", null, false);
+    $post_set = find_all_articles($table, "id", null, "DESC",false);
     $output  = "";
     while($post = mysqli_fetch_assoc($post_set)) {
         $output .= "<li>";
@@ -215,8 +236,6 @@ function dropdown_Edit($table){
         $output .= "</a>";
         $output .= "</li>";
     }
-    $output .= "<li class=\"divider\"></li>";
-    $output .= "<li><a href=\"#\">New Post</a></li";
     return $output;
 }
 
@@ -278,6 +297,22 @@ function find_admin_by_username($username) {
   }
 }
 
+function find_admin_by_id($id) {
+  global $connection;
+
+  $query  = "SELECT * ";
+  $query .= "FROM admins ";
+  $query .= "WHERE id = {$id} ";
+  $query .= "LIMIT 1";
+  $admin_set = mysqli_query($connection, $query);
+  confirm_query($admin_set);
+  if($admin = mysqli_fetch_assoc($admin_set)) {
+    return $admin;
+  } else {
+    return null;
+  }
+}
+
 function attempt_login($username, $password){
     $admin = find_admin_by_username($username);
     if($admin){
@@ -293,13 +328,20 @@ function attempt_login($username, $password){
 }
 
 function logged_in(){
-    return isset($_SESSION["admin_id"]);
+    $minutes = 60;
+    if(isset($_SESSION["admin_id"]) && $_SESSION['timeout'] + $minutes * 60 > time())
+    {
+        $_SESSION['timeout'] = time();
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function confirm_logged_in(){
   if(!logged_in())
   {
-      redirect_to("index.php");
+      redirect_to("login.php");
   }
 }
 

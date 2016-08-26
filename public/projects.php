@@ -9,7 +9,13 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-9">
-            <?php echo display_articles($page); ?>
+            <?php 
+                if(!empty(display_articles($page))){
+                    echo display_articles($page); 
+                } else {
+                    echo display_no_articles();
+                }
+            ?>
         </div>
 
         <?php echo navigation($page); ?>

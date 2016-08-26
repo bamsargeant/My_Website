@@ -19,6 +19,7 @@
                 // Mark user as logged in
                 $_SESSION["admin_id"] = $found_admin["id"];
                 $_SESSION["username"] = $found_admin["username"];
+                $_SESSION["timeout"] = time();
                 redirect_to("admin.php");
             } else {
                 $_SESSION["message"] = "Username/Password not found.";

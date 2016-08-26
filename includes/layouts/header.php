@@ -42,8 +42,8 @@
                         <li class="dropdown">
                             <a href = "#" class = "dropdown-toggle" data-toggle = "dropdown">Social Media <b class="caret"></b></a> 
                             <ul class="dropdown-menu">
-                                <li> <a href = "https://www.youtube.com/channel/UCTYsKt1mWQbQIS9VpZVZ3Tg">Youtube</a> </li>
-                                <li> <a href = "https://twitter.com">Twitter</a> </li>
+                                <li> <a href="https://www.youtube.com/channel/UCTYsKt1mWQbQIS9VpZVZ3Tg" target="_blank">Youtube</a> </li>
+                                <li> <a href="https://twitter.com" target="_blank">Twitter</a> </li>
                             </ul>
                         <li <?php if($page == "resume"){echo "class=\"active\"";} ?>> <a href = "resume.php">Resume</a> </li>
                     </ul>

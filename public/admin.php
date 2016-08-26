@@ -18,8 +18,8 @@
         <hr/>
 
         <ul class="nav nav-pills">
-          <li class="active"><a data-toggle="pill" href="#blog">Blog</a></li>
-          <li><a data-toggle="pill" href="#projects">Project</a></li>
+          <li class="active"><a data-toggle="pill" href="#blog" class="btn-xl">Blog</a></li>
+          <li><a data-toggle="pill" href="#projects" class="btn-xl">Project</a></li>
         </ul>
 
         <div class="tab-content">
@@ -40,11 +40,10 @@
                         $output .= "</a>";
                         $output .= "</li>";
                     }
-                    $output .= "<li class=\"divider\"></li>";
-                    $output .= "<li><a href=\"#\">New Post</a></li";
                     echo $output;
                 ?>    
                 </ul>
+                <a href="new_post.php?blog" class="btn btn-warning new_post" role="button">New Post</a>
             </div>
           </div>
           <div id="projects" class="tab-pane fade">
@@ -64,13 +63,23 @@
                         $output .= "</a>";
                         $output .= "</li>";
                     }
-                    $output .= "<li class=\"divider\"></li>";
-                    $output .= "<li><a href=\"#\">New Post</a></li";
                     echo $output;
                 ?>    
                 </ul>
+                <a href="new_post.php?projects" class="btn btn-warning new_post" role="button">New Post</a>
             </div>          
           </div>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <h3>Upload Image</h3>
+            <form action="../includes/upload.php" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="fileToUpload">Select image to upload:</label>
+                    <input type="file" name="fileToUpload" id="fileToUpload">
+                </div>
+                <input class="btn btn-success" type="submit" value="Upload Image" name="submit">
+            </form>
         </div>
         <hr/>
         <h3>Manage Admins</h3>

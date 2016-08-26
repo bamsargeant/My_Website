@@ -50,3 +50,26 @@ body{
 .my_header{
     max-width: 1200px;
 }
+
+.new_post{
+    margin-left: 15px;
+}
+
+.btn-xl {
+    padding: 18px 28px;
+    font-size: 22px;
+    border-radius: 8px;
+}
+
+.no_content{
+    padding: 18px 28px;
+    font-size: 30px;
+    border-radius: 8px;
+    height: 200px;
+    text-align: center;
+}
+
+.image_list{
+    height: auto;
+    max-height: 200px;
+}
