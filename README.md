@@ -4,7 +4,17 @@ THIS IS A WORK IN PROGRESS
 This is a website built in PHP using WAMP MYSQL, using the bootstrap library to maintain functionality over different devices.
 
 ------Screenshots------
-![Alt text](/public/uploads/index_ss.png?raw=true "Index.php")
+INDEX
+![Alt text](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/index_ss.png?raw=true "Index.php")
+
+BLOG
+![Alt text](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/blog_ss.png?raw=true "Index.php")
+
+ADMIN
+![Alt text](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/admin_ss.png?raw=true "Index.php")
+
+EDIT_POST
+![Alt text](https://github.com/bamsargeant/My_Website/tree/master/public/uploads/edit_ss.png?raw=true "Index.php")
 
 ------PUBLIC-------
 
